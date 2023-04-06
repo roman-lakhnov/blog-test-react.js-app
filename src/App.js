@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState } from 'react'
+import Counter from './components/Counter.jsx'
 
 function App() {
-  return (
-    <div className="App">
+  const [value,setValue]=useState('input text')
 
-    </div>
-  );
+	return (
+		<div className='App'>
+		<Counter/>
+		</div>
+	)
 }
 
-export default App;
+export default App
