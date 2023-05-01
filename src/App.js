@@ -6,12 +6,29 @@ import MyModal from './components/UI/MyModal/MyModal'
 import MyButton from './components/UI/button/MyButton'
 import { usePosts } from './hooks/usePosts'
 import PostFilter from './components/PostFilter'
+import { useEffect } from 'react'
+import PostService from './API/PostService'
+import Loader from './components/UI/Loader/Loader'
+import { useFetching } from './hooks/useFetching'
 
 function App() {
 	const [posts, setPosts] = useState([])
 	const [filter, setFilter] = useState({ sort: '', query: '' })
 	const [modal, setModal] = useState(false)
 	const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
+	const [fetchPosts,isPostsLoading,postError]=useFetching(async()=>{
+		const posts = await PostService.getAll()
+		setPosts(posts)
+	})
+
+	// useEffect(() => {
+	// 	document.title = `Posts ${sortedAndSearchedPosts.length}`
+	// })
+
+	useEffect(() => {
+		fetchPosts()
+		return () => {}
+	},[])
 
 	const createPost = newPost => {
 		setPosts([...posts, newPost])
@@ -30,14 +47,23 @@ function App() {
 			</MyModal>
 			<hr style={{ margin: '15px 0' }} />
 			<PostFilter filter={filter} setFilter={setFilter} />
-			{sortedAndSearchedPosts.length ? (
+			{postError && <h1 style={{ textAlign: 'center' }}>Error ${postError}</h1>}
+			{isPostsLoading ? (
+				<div
+					style={{
+						display: 'flex',
+						justifyContent: 'center',
+						marginTop: 50
+					}}
+				>
+					<Loader />
+				</div>
+			) : (
 				<PostList
 					remove={removePost}
 					posts={sortedAndSearchedPosts}
-					title='Posts List 1'
+					title={sortedAndSearchedPosts.length?'Posts List':'No post found'} 
 				/>
-			) : (
-				<h1 style={{ textAlign: 'center' }}>No post found</h1>
 			)}
 		</div>
 	)
