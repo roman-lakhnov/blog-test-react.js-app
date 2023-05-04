@@ -40,6 +40,7 @@ function Posts() {
 	useEffect(() => {
 		fetchPosts(limit, page)
 		return () => {}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	const createPost = newPost => {
